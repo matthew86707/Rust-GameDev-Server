@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Vector;
 
-
 public class ClientHandler implements Runnable{
 	
 	double position_x = 0.0;
@@ -33,10 +32,20 @@ public class ClientHandler implements Runnable{
 		System.out.println(clientData + " With " + Main.clients.size() + " connected.");
 		System.out.flush();
 		
+		if(clientData.equals("NA")) {
+			System.out.print(" - No Data");
+			if(Main.lightAuthority != null && Main.lightAuthority.equals(this)) {
+				Main.lightAuthority = null;
+			}
+		}else if (Main.lightAuthority != null && Main.lightAuthority.equals(this)){
 		String[] pos = clientData.split(":");
 		position_x = Double.parseDouble(pos[0]);
 		position_y = Double.parseDouble(pos[1]);
 		position_z = Double.parseDouble(pos[2]);
+		
+		}else if(Main.lightAuthority == null) {
+			Main.lightAuthority = this;
+		}
 		
 		StringBuilder playerPositions = new StringBuilder();
 		
@@ -50,6 +59,8 @@ public class ClientHandler implements Runnable{
 				playerPositions.append(ch.position_y);
 				playerPositions.append(":");
 				playerPositions.append(ch.position_z);
+				playerPositions.append(":");
+				playerPositions.append(Main.lightAuthority != null && Main.lightAuthority.equals(this) ? "1" : "0");
 			}
 		}
 
